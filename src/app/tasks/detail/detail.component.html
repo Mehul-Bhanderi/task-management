@@ -1,0 +1,96 @@
+<div class="detail-container">
+  <div *ngIf="loading" class="loading">
+    <p>Loading task...</p>
+  </div>
+
+  <div *ngIf="error" class="alert alert-error">
+    {{ error }}
+  </div>
+
+  <div *ngIf="task && !loading" class="detail-content">
+    <div class="detail-header">
+      <div class="detail-title-section">
+        <h1>{{ task.title }}</h1>
+        <div class="badges">
+          <span [class]="'priority-badge ' + getPriorityClass(task.priority)">
+            {{ task.priority }} Priority
+          </span>
+          <span [class]="'status-badge ' + getStatusClass(task.status)">
+            {{ task.status }}
+          </span>
+        </div>
+      </div>
+      <div class="detail-actions">
+        <button (click)="editTask()" class="btn btn-primary">Edit</button>
+        <button (click)="deleteTask()" class="btn btn-danger">Delete</button>
+        <button routerLink="/tasks" class="btn btn-secondary">Back to List</button>
+      </div>
+    </div>
+
+    <div class="detail-grid">
+      <div class="detail-main">
+        <section class="detail-section">
+          <h2>Description</h2>
+          <p class="description-text">{{ task.description || 'No description provided' }}</p>
+        </section>
+
+        <section class="detail-section" *ngIf="task.files && task.files.length">
+          <h2>Attached Files</h2>
+          <div class="files-list">
+            <div class="file-item" *ngFor="let file of task.files">
+              <div class="file-info">
+                <span class="file-name">{{ file.originalName }}</span>
+                <span class="file-size">{{ formatFileSize(file.size) }}</span>
+              </div>
+              <button (click)="downloadFile(file)" class="btn-download">Download</button>
+            </div>
+          </div>
+        </section>
+
+        <section class="detail-section" *ngIf="task.tags && task.tags.length">
+          <h2>Tags</h2>
+          <div class="tags">
+            <span class="tag" *ngFor="let tag of task.tags">{{ tag }}</span>
+          </div>
+        </section>
+
+        <section class="detail-section">
+          <button (click)="toggleLogs()" class="btn btn-outline">
+            {{ showLogs ? 'Hide' : 'Show' }} Activity Logs
+          </button>
+          <div class="logs-section" *ngIf="showLogs">
+            <div *ngIf="logs.length === 0" class="no-logs">
+              <p>No activity logs</p>
+            </div>
+            <div class="logs-list">
+              <div class="log-item" *ngFor="let log of logs">
+                <div class="log-time">{{ formatDate(log.timestamp) }}</div>
+                <div class="log-action">{{ log.action }}</div>
+                <div class="log-user">by {{ log.userId?.email }}</div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <aside class="detail-sidebar">
+        <div class="sidebar-section">
+          <h3>Due Date</h3>
+          <p>{{ formatDate(task.dueDate) }}</p>
+        </div>
+        <div class="sidebar-section">
+          <h3>Created</h3>
+          <p>{{ formatDate(task.createdAt) }}</p>
+        </div>
+        <div class="sidebar-section">
+          <h3>Last Updated</h3>
+          <p>{{ formatDate(task.updatedAt) }}</p>
+        </div>
+        <div class="sidebar-section">
+          <h3>Created By</h3>
+          <p>{{ task.createdBy }}</p>
+        </div>
+      </aside>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,16 @@
+<div class="app">
+  <nav class="navbar" *ngIf="isAuthenticated">
+    <div class="navbar-brand">
+      <h2>Task Manager</h2>
+    </div>
+    <ul class="navbar-menu">
+      <li><a routerLink="/tasks" routerLinkActive="active">Tasks</a></li>
+      <li><a routerLink="/tasks/new">New Task</a></li>
+      <li><a href="#" (click)="logout(); $event.preventDefault()" class="logout-link">Logout</a></li>
+    </ul>
+  </nav>
+
+  <main class="main-content">
+    <router-outlet></router-outlet>
+  </main>
+</div>

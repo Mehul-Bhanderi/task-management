@@ -1,0 +1,102 @@
+<div class="tasks-container">
+  <div class="tasks-header">
+    <h1>My Tasks</h1>
+    <a routerLink="/tasks/new" class="btn btn-primary">Create New Task</a>
+  </div>
+
+  <div class="filters-section">
+    <div class="search-box">
+      <input
+        type="text"
+        placeholder="Search tasks..."
+        #searchInput
+        (keyup)="onSearch(searchInput.value)"
+        class="search-input"
+      />
+    </div>
+
+    <div class="filters-grid">
+      <div class="filter-group">
+        <label>Priority</label>
+        <select [(ngModel)]="filters.priority" (change)="onFilterChange()" class="filter-select">
+          <option value="">All Priorities</option>
+          <option *ngFor="let p of priorityOptions" [value]="p">{{ p }}</option>
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label>Status</label>
+        <select [(ngModel)]="filters.status" (change)="onFilterChange()" class="filter-select">
+          <option value="">All Statuses</option>
+          <option *ngFor="let s of statusOptions" [value]="s">{{ s }}</option>
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label>Sort By</label>
+        <select [(ngModel)]="filters.sort" (change)="onSortChange(filters.sort || '-createdAt')" class="filter-select">
+          <option *ngFor="let opt of sortOptions" [value]="opt.value">{{ opt.label }}</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <div class="alert alert-error" *ngIf="error">
+    {{ error }}
+  </div>
+
+  <div *ngIf="loading" class="loading">
+    <p>Loading tasks...</p>
+  </div>
+
+  <div *ngIf="!loading && tasks.length === 0" class="no-tasks">
+    <p>No tasks found</p>
+  </div>
+
+  <div class="tasks-grid" *ngIf="!loading && tasks.length > 0">
+    <div class="task-card" *ngFor="let task of tasks">
+      <div class="task-header">
+        <div class="task-title-section">
+          <h3 class="task-title">{{ task.title }}</h3>
+          <span [class]="'priority-badge ' + getPriorityClass(task.priority)">
+            {{ task.priority }}
+          </span>
+          <span [class]="'status-badge ' + getStatusClass(task.status)">
+            {{ task.status }}
+          </span>
+        </div>
+        <div class="task-actions">
+          <button (click)="editTask(task._id)" class="btn-icon" title="Edit">✏️</button>
+          <button (click)="deleteTask(task._id)" class="btn-icon" title="Delete">🗑️</button>
+        </div>
+      </div>
+
+      <p class="task-description">{{ task.description || 'No description' }}</p>
+
+      <div class="task-meta">
+        <span class="meta-item">
+          <strong>Due:</strong> {{ formatDate(task.dueDate) }}
+        </span>
+        <span class="meta-item" *ngIf="task.tags && task.tags.length">
+          <strong>Tags:</strong> <span class="tags">{{ task.tags.join(', ') }}</span>
+        </span>
+        <span class="meta-item" *ngIf="task.files && task.files.length">
+          <strong>Files:</strong> {{ task.files.length }}
+        </span>
+      </div>
+
+      <button (click)="viewTask(task._id)" class="btn btn-view">View Details</button>
+    </div>
+  </div>
+
+  <div class="pagination" *ngIf="!loading && pagination.pages > 1">
+    <button
+      (click)="onPageChange(page)"
+      *ngFor="let page of [].constructor(pagination.pages)"
+      [class.active]="(page + 1) === pagination.page"
+      class="page-btn"
+    >
+      {{ page + 1 }}
+    </button>
+  </div>
+</div>
